@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentUtil intentUtil;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -52,32 +52,34 @@ public class MainActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Profile profile = Profile.getCurrentProfile();
-                info.setText(message(profile));
+               Profile profile = Profile.getCurrentProfile();
+               info.setText(message(profile));
 
-                String userId = loginResult.getAccessToken().getUserId();
-                String accessToken = loginResult.getAccessToken().getToken();
+               String userId = loginResult.getAccessToken().getUserId();
+               String accessToken = loginResult.getAccessToken().getToken();
 
-                // save accessToken to SharedPreference
+//                // save accessToken to SharedPreference
                 prefUtil.saveAccessToken(accessToken);
 
-                String profileImgUrl = "https://graph.facebook.com/" + userId + "/picture?type=large";
+               String profileImgUrl = "https://graph.facebook.com/" + userId + "/picture?type=large";
 
 
                 Glide.with(MainActivity.this)
                         .load(profileImgUrl)
                         .into(profileImgView);
+               // intentUtil.showAccessToken();
+
             }
 
             @Override
             public void onCancel() {
-                info.setText("Login attempt cancelled.");
+                info.setText("Intento de login cancelado");
             }
 
             @Override
             public void onError(FacebookException e) {
                 e.printStackTrace();
-                info.setText("Login attempt failed.");
+                info.setText("Fallo el intento de login");
             }
         });
     }
@@ -106,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
         deleteAccessToken();
         Profile profile = Profile.getCurrentProfile();
         info.setText(message(profile));
+
+        if(Profile.getCurrentProfile()!=null){
+        String profileImgUrl = "https://graph.facebook.com/" + profile.getId() + "/picture?type=large";
+        Glide.with(MainActivity.this)
+                .load(profileImgUrl)
+                .into(profileImgView);}
     }
 
 
@@ -117,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     private String message(Profile profile) {
         StringBuilder stringBuffer = new StringBuilder();
         if (profile != null) {
-            stringBuffer.append("Welcome ").append(profile.getName());
+            stringBuffer.append("Bienvenido ").append(profile.getFirstName());
         }
         return stringBuffer.toString();
     }
